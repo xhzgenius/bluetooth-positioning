@@ -1,17 +1,27 @@
-import msgpack_numpy
-import msgpack
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+import msgpack
+import msgpack_numpy
+
+
 class MyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
+        # Read the http POST content. 
         raw_data = self.rfile.read(int(self.headers['content-length'])) # Read http content
-        # data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Decode the http content
-        data = raw_data # TODO: decode the data, it is a mountain of shit. 
+        
+        # Decode the binary data from black box. 
+        # TODO: Decode the data, which is a binary mountain of shit, as you can see. 
         print("[%s] Received http request from %s, content: %s"%(
-            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, data.decode()
+            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, raw_data
         ))
- 
+        # data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Decode the http content. 
+        # Unfortunately, this code can only decode the outer part of the json, but the inside part remains binary. 
+        
+        # Send data to mysql. 
+        # TODO: Send data to mysql. 
+        
+        # Respond to the client. (Optional)
         self.send_response(200)
         self.send_header("Content-type","text/html") # Set response header
         self.send_header("response", "Received your POST request. ")
