@@ -10,13 +10,13 @@ class MyHandler(BaseHTTPRequestHandler):
         # Read the http POST content. 
         raw_data = self.rfile.read(int(self.headers['content-length'])) # Read http content
         
-        # Decode the binary data from black box. 
-        # TODO: Decode the data, which is a binary mountain of shit, as you can see. 
+        data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Data from black box, in json form. 
+        devices = data["devices"] # This is the frame which is defined in the documentation of black box. 
+        # TODO: Decode the devices data frame (binary). 
+        
         print("[%s] Received http request from %s, content: %s"%(
-            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, raw_data
+            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, data
         ))
-        # data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Decode the http content. 
-        # Unfortunately, this code can only decode the outer part of the json, but the inside part remains binary. 
         
         # Send data to mysql. 
         # TODO: Send data to mysql. 
