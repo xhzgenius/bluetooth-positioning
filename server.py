@@ -1,25 +1,30 @@
-from socketserver import BaseRequestHandler, ThreadingTCPServer
+import msgpack_numpy
+import msgpack
+from datetime import datetime
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-class MyHandler(BaseRequestHandler):
-    def handle(self):
-        print('Got connection from', self.client_address)
-        
-        while True:
-            msg = self.request.recv(8192)
-            if not msg:
-                break
-            #####################################
-            # Do something with the message
-            # TODO: unpack the message
-            # TODO: Send data to mysql
-            print("Received raw data:", msg)
-            #####################################
+class MyHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        raw_data = self.rfile.read(int(self.headers['content-length'])) # Read http content
+        # data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Decode the http content
+        data = raw_data # TODO: decode the data, it is a mountain of shit. 
+        print("[%s] Received http request from %s, content: %s"%(
+            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, data.decode()
+        ))
+ 
+        self.send_response(200)
+        self.send_header("Content-type","text/html") # Set response header
+        self.send_header("response", "Received your POST request. ")
+        self.end_headers()
+        print("[%s] Responded to %s"%(
+            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address
+        ))
+        pass
 
-# our_server_ip = "82.157.173.163" # Our server's ip. # It's not this!!! 
-our_server_ip = "127.0.0.1" # This is right. 
+our_server_ip = "0.0.0.0" # This is right. 
 our_server_port = 12345
 
 if __name__ == '__main__':
-    serv = ThreadingTCPServer((our_server_ip, our_server_port), MyHandler)
-    print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
-    serv.serve_forever()
+    with HTTPServer((our_server_ip, our_server_port), MyHandler) as server:
+        print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
+        server.serve_forever()
