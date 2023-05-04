@@ -2,25 +2,7 @@ import time
 from typing import Dict, Tuple
 from database import DataBase
 
-def locate(positions: Tuple[float], values: Tuple[float]) -> Tuple[float]:
-    '''
-    ### 描述
-
-    给定三个蓝牙接收装置的坐标和它们接收到的值（信号强度），计算出设备的坐标。
-    
-    ### Params:
-    
-    positions: 三个装置的坐标，包装成(x1, y1, x2, y2, x3, y3)的形式。
-    
-    values: 三个装置接收到的信号强度，包装成(value1, value2, value3)的形式。
-    
-    ### Returns:
-     
-    返回设备的坐标，包装成(x, y)的形式。
-    '''
-    # TODO: @xhz
-    return (0, 0)
-
+# TODO: replace mac names with MAC address and hardcode the location
 macs = {
     'mac1': (0, 0),
     'mac2': (0, 0),
@@ -29,13 +11,34 @@ macs = {
 
 class Analyzer:
     _sleep_time = 1
+    # standard rssi for 1 meter
+    # https://iotandelectronics.wordpress.com/2016/10/07/how-to-calculate-distance-from-the-rssi-value-of-the-ble-beacon/
+    _measured_power = -69 
+    _N = 2
     
     def __init__(self, name):
         self.db = DataBase(name) 
     
-    def _find_location(self, data: Dict[str, int]):
-        # TODO: trielocation: _mac_map X rssi -> location x,y
-        return (0,0)
+    def _find_location(self, data: Dict[str, float]):
+        xs = []
+        ys = []
+        rs = []
+        for mac in macs:
+            xs.append(macs[mac][0])
+            ys.append(macs[mac][1])
+            rs.append(data[mac])
+        A = 2*xs[1] - 2*xs[0]
+        B = 2*ys[1] - 2*ys[0]
+        C = rs[0]**2 - rs[1]**2 - xs[0]**2 + xs[1]**2 - ys[0]**2 + ys[1]**2
+        D = 2*xs[2] - 2*xs[1]
+        E = 2*ys[2] - 2*ys[1]
+        F = rs[1]**2 - rs[2]**2 - xs[1]**2 + xs[2]**2 - ys[1]**2 + ys[2]**2
+        x = (C*E - F*B) / (E*A - B*D)
+        y = (C*D - A*F) / (B*D - A*E)
+        return x,y
+    
+    def _calculate_distance(self, rssi):
+        return 10 ** ((-Analyzer._messured_power - rssi) / 10  * Analyzer._N)
     
     def run(self):
         print (f'analyzer runnning...')
@@ -50,7 +53,7 @@ class Analyzer:
                     break 
                 mac, rssi, _ = results[0]
                 rssi = int(rssi)
-                data[mac] = rssi 
+                data[mac] = self._calculate_distance(rssi) 
             if failed: continue 
             x,y = self._find_location(data)
             self.db.insert_location(x,y)
@@ -78,7 +81,11 @@ class Visualizer:
             xs = [int(x) for x, _, _ in locations]
             ys = [int(y) for y, _, _ in locations]
             fig, ax = plt.subplots()
-            ax.scatter(xs, ys)
+            ax.scatter([x[0] for x in macs.values()], [x[1] for x in macs.values()], c = 'red')
+            for mac in macs:
+                ax.annotate(mac, macs[mac])
+                
+            ax.scatter(xs, ys, c = 'black')
             
             for i,x,y in enumerate(zip(xs,ys)):
                 ax.annotate(str(i), (x,y))
