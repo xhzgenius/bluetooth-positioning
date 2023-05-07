@@ -8,16 +8,16 @@ pip3 install msgpack msgpack_numpy mysql-connector-python matplotlib
 
 ## DataBase 
 1. installation 
-    - login to mysql 
+    - login to mysql: 
     ```bash 
     sudo mysql -u root 
     ```
-    - add an account;
+    - add an account: 
     ```mysql
     mysql> CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
     mysql> GRANT ALL PRIVILEGES ON *.* TO 'user'@'localhost';
     ```
-    - add a key.py with following attributes:
+    - add a key.py with following attributes: 
     ```python
     our_server_ip = "0.0.0.0"
     our_server_port = 12345
@@ -42,6 +42,7 @@ python ./main.py
 ```
 
 ## 排雷指南
+
 ##### 服务器寿命不超过2分钟，之后就死了
 原因：单线程HTTPServer太垃圾，默认0.5秒处理一次请求，造成服务器堵塞。改成ThreadingHTTPServer光速解决。
 
@@ -53,7 +54,7 @@ python ./main.py
 
 ## 实验记录
 ##### 坐标
-小型地砖的斜边长度为53.2cm，黑盒子的横向距离为5个斜边，纵向距离为4个斜边。如图：
+小型地砖的斜边长度为53.2cm，黑盒子的横向距离为5个斜边，纵向距离为4个斜边。如图，方块代表黑盒子：
 
 ■
 
@@ -67,12 +68,12 @@ python ./main.py
 
 ■ —— —— —— —— —— ■
 
-也即横向距离为266.0cm，纵向距离为212.8cm。左上角黑盒子的水平高度是75.6cm，其它两个是0。因此三个黑盒子的坐标：
+也即横向距离为266.0cm，纵向距离为212.8cm。三个黑盒子均位于水平地面上，因此坐标分别为：
 
-- (0, 212.8, 75.6)
-- (0, 0, 0)
-- (266.0, 0, 0)
+- (0, 212.8)
+- (0, 0)
+- (266.0, 0)
 
 ##### 标定
 
-用4×3=12个网格格点进行了标定，参数为N和measured_power，使用线性回归来拟合距离的对数和rssi值的关系，由回归系数计算参数。
+我们用4×3=12个网格格点进行了标定，标定参数为N和measured_power，使用线性回归来拟合距离的对数和rssi值的关系，由回归系数计算参数。
