@@ -47,26 +47,14 @@ class DataBase:
             return False
         now = datetime.now()
         formatted_date = now.strftime('%Y%m%D%H%M%S')
-        # sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
-        # val = (mac, str(rssi), formatted_date)
-        # self.cursor.execute(sql, val)
-        # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
-        # print("print get_signal")
-        # res = self.get_signal(mac=mac, last = 1)
-        # for x in res: print (x)
         try:
             sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
             val = (mac, str(rssi), formatted_date)
             self.cursor.execute(sql, val)
             self.db.commit()
-            # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
-            # print("ALL SIGNALS: ")
-            # res = self.get_all_signals()
+            # print("get_signal")
+            # res = self.get_signal(mac=mac)
             # for x in res: print (x)
-            # debug print
-            print("get_signal")
-            res = self.get_signal(mac=mac)
-            for x in res: print (x)
         except Exception as e:
             print("SQL ERROR", e)
         return True 
@@ -98,8 +86,11 @@ class DataBase:
         now = datetime.now()
         formatted_date = now.strftime('%Y%m%D%H%M%S')
         sql = "INSERT INTO locations (x, y, date) VALUES (%s, %s, %s)"
-        self.cursor.execute(sql, (str(x),str(y),formatted_date))
-        self.db.commit()
+        try:
+            self.cursor.execute(sql, (str(x),str(y),formatted_date))
+            self.db.commit()
+        except Exception as e:
+            print(e)
         return True
     
     def get_all_locations(self, last = 5):

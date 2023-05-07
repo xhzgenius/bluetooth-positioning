@@ -5,9 +5,9 @@ from key import database_name
 
 # TODO: replace mac names with MAC address and hardcode the location
 macs = {
-    'E0E2E69C1E6C': (0, 0),
-    'E0E2E69C1FD0': (1, 0),
-    'E0E2E570175C': (1, 1)
+    'E0E2E69C1E6C': (2.66, 0),
+    'E0E2E69C1FD0': (0, 0),
+    'E0E2E570175C': (0, 212.8)
 }
 
 class Analyzer:
@@ -49,9 +49,9 @@ class Analyzer:
             failed = False
             for mac in macs:
                 results = self.db.get_signal(mac = mac)
-                # results = self.db.get_all_signals()
+                r = self.db.get_all_signals()
                 print("In ana:")
-                for x in results: print(x)
+                for x in r: print("ana:",x)
                 if not len(results):
                     failed = True 
                     break 
