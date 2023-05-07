@@ -1,7 +1,7 @@
 import time
 from typing import Dict, Tuple
-from database import DataBase
-from key import database_name
+from database import global_db
+# from key import database_name
 
 # TODO: replace mac names with MAC address and hardcode the location
 MACS = {
@@ -48,7 +48,7 @@ class Analyzer:
     
     def _calculate_distance(self, mac, rssi):
         return 10 ** ((Analyzer._measured_power[mac] - rssi) / 10  * Analyzer._N[mac])
-
+    
     def single_run(self):
         data = {}
         failed = False
