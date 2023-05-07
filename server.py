@@ -1,11 +1,11 @@
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from key import *
+from algorithm import global_analyzer, global_visualizer
+from database import global_db
 
 import msgpack
 import msgpack_numpy
-
-from database import  DataBase
 
 
 class MyHandler(BaseHTTPRequestHandler):
@@ -44,14 +44,21 @@ class MyHandler(BaseHTTPRequestHandler):
         if rssi_len == 0:
             return
         avg_rssi = int(sum(rssi_lst)/rssi_len)
+
         # Send data to mysql. 
-        self.db.insert_signal(box_mac, avg_rssi)
-        # debug print
+        global_db.insert_signal(box_mac, avg_rssi)
         print ('target_mac:', target_mac, 'box_mac:', box_mac, 'avg_rssi:', avg_rssi)        
         
+        # Calculate position. 
+        global_analyzer.single_run()
+
+        # Visualize. 
+        global_visualizer.single_run()
+        # You'd better run successfully. 
+
         pass
         
-def serve(name):
+def serve():
     with ThreadingHTTPServer((our_server_ip, our_server_port), MyHandler) as server:
         print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
         try:

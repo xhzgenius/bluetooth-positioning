@@ -52,8 +52,9 @@ class DataBase:
             val = (mac, str(rssi), formatted_date)
             self.cursor.execute(sql, val)
             self.db.commit()
-            # print("get_signal")
-            # res = self.get_signal(mac=mac)
+            # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
+            # print("ALL SIGNALS: ")
+            # res = self.get_all_signals()
             # for x in res: print (x)
         except Exception as e:
             print("SQL ERROR", e)
@@ -80,8 +81,8 @@ class DataBase:
         return myresult
 
     def insert_location(self, x, y):
-        if not type(x) == (int, float) or not type(y) == (int, float):
-            print('WARNING(failed locations insert): x, y should be int', file = sys.stderr)
+        if not type(x) in (int, float) or not type(y) in (int, float):
+            print('WARNING(failed locations insert): x, y should be int or float', file = sys.stderr)
             return False
         now = datetime.now()
         formatted_date = now.strftime('%Y%m%D%H%M%S')
