@@ -1,7 +1,7 @@
 import time
 from typing import Dict, Tuple
-from database import global_db
-# from key import database_name
+from database import DataBase
+from key import database_name
 
 # TODO: replace mac names with MAC address and hardcode the location
 macs = {
@@ -18,7 +18,7 @@ class Analyzer:
     _N = 2
     
     def __init__(self, name):
-        self.db = global_db
+        self.db = DataBase(database_name)
     
     def _find_location(self, data: Dict[str, float]):
         xs = []
@@ -39,7 +39,7 @@ class Analyzer:
         return x,y
     
     def _calculate_distance(self, rssi):
-        return 10 ** ((-Analyzer._messured_power - rssi) / 10  * Analyzer._N)
+        return 10 ** ((-Analyzer._measured_power - rssi) / 10  * Analyzer._N)
     
     def run(self):
         print (f'analyzer runnning...')
@@ -48,8 +48,8 @@ class Analyzer:
             data = {}
             failed = False
             for mac in macs:
-                # results = self.db.get_signal(mac = mac)
-                results = self.db.get_all_signals()
+                results = self.db.get_signal(mac = mac)
+                # results = self.db.get_all_signals()
                 print("In ana:")
                 for x in results: print(x)
                 if not len(results):
@@ -70,7 +70,7 @@ class Visualizer:
     _sleep_time = 5
     
     def __init__(self, name, logdir = '.'):
-        self.db = global_db
+        self.db = DataBase(database_name)
         self.logdir = logdir 
         self.cnt = 0
         os.system(f'mkdir -p {logdir}')

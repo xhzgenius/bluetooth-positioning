@@ -5,11 +5,12 @@ from key import *
 import msgpack
 import msgpack_numpy
 
-from database import global_db
+from database import  DataBase
 
 
 class MyHandler(BaseHTTPRequestHandler):
     def __init__(self, *args):
+        self.db = DataBase(database_name)
         BaseHTTPRequestHandler.__init__(self, *args)
         
     def do_POST(self):
@@ -44,14 +45,8 @@ class MyHandler(BaseHTTPRequestHandler):
             return
         avg_rssi = int(sum(rssi_lst)/rssi_len)
         # Send data to mysql. 
-        global_db.insert_signal(box_mac, avg_rssi)
-        # res = global_db.get_signal(mac=box_mac, last = 1)
-        # for x in res: print (x)
-            # print("show getsignals")
-            # global_db.get_signal(mac=target_mac, last = 1)
-            # print("[%s] Inserted an entry into mysql. "%
-            #       (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), 
-            # ))
+        self.db.insert_signal(box_mac, avg_rssi)
+        # debug print
         print ('target_mac:', target_mac, 'box_mac:', box_mac, 'avg_rssi:', avg_rssi)        
         
         pass

@@ -120,15 +120,10 @@ class DataBase:
             print(e)
             return []
     def clear(self):
-        # self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
-        print("hello world")
-        # time.sleep(1)
-        
-global_db = DataBase(database_name)
+        self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
 
 if __name__ == '__main__':
-    # db = DataBase("test")
-    db = global_db
+    db = DataBase("test")
     print ('----test0-----')
     db.insert_signal(mac = '12345', rssi = 20)
     db.insert_signal(mac = '345678', rssi = 30)
