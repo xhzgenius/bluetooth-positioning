@@ -34,3 +34,24 @@ pip3 install msgpack msgpack_numpy mysql-connector-python matplotlib
 ```
 python ./main.py 
 ```
+
+## 排雷指南
+##### 服务器寿命不超过2分钟，之后就死了
+原因：单线程HTTPServer太垃圾，默认0.5秒处理一次请求，造成服务器堵塞。改成ThreadingHTTPServer光速解决。
+
+##### MySQL Error 2013: Connection lost
+原因：三个进程共用一个MySQL Cursor，导致不明错误。
+
+##### get_signal等查询语句查询不出东西，误以为插入失败
+原因：查询语句写炸了，插入是对的。查询语句里面的字符串值应该加引号！！！
+
+## 实验记录
+##### 坐标
+小型地砖的斜边长度为53.2cm，黑盒子的横向距离为5个斜边，纵向距离为4个斜边。如图：
+■
+|
+|
+|
+|
+■ —— —— —— —— —— ■
+左上角黑盒子的水平高度是75.6cm，其它两个是0。
