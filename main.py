@@ -1,7 +1,11 @@
 import multiprocessing
-from database import global_db
+from database import DataBase
 from server import serve
 from algorithm import analyze, visualize
+from multiprocessing import Pool
+from key import database_name
+
+# import mysql.connector.pooling
 
 def main():
     serve()

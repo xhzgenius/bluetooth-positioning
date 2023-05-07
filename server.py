@@ -10,6 +10,7 @@ import msgpack_numpy
 
 class MyHandler(BaseHTTPRequestHandler):
     def __init__(self, *args):
+        self.db = DataBase(database_name)
         BaseHTTPRequestHandler.__init__(self, *args)
         
     def do_POST(self):

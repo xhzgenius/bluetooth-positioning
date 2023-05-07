@@ -47,13 +47,6 @@ class DataBase:
             return False
         now = datetime.now()
         formatted_date = now.strftime('%Y%m%D%H%M%S')
-        # sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
-        # val = (mac, str(rssi), formatted_date)
-        # self.cursor.execute(sql, val)
-        # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
-        # print("print get_signal")
-        # res = self.get_signal(mac=mac, last = 1)
-        # for x in res: print (x)
         try:
             sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
             val = (mac, str(rssi), formatted_date)
@@ -63,10 +56,6 @@ class DataBase:
             # print("ALL SIGNALS: ")
             # res = self.get_all_signals()
             # for x in res: print (x)
-            # debug print
-            print("get_signal")
-            res = self.get_signal(mac=mac)
-            for x in res: print (x)
         except Exception as e:
             print("SQL ERROR", e)
         return True 
@@ -98,8 +87,11 @@ class DataBase:
         now = datetime.now()
         formatted_date = now.strftime('%Y%m%D%H%M%S')
         sql = "INSERT INTO locations (x, y, date) VALUES (%s, %s, %s)"
-        self.cursor.execute(sql, (str(x),str(y),formatted_date))
-        self.db.commit()
+        try:
+            self.cursor.execute(sql, (str(x),str(y),formatted_date))
+            self.db.commit()
+        except Exception as e:
+            print(e)
         return True
     
     def get_all_locations(self, last = 5):
@@ -122,15 +114,10 @@ class DataBase:
             print(e)
             return []
     def clear(self):
-        # self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
-        print("hello world")
-        # time.sleep(1)
-        
-global_db = DataBase(database_name)
+        self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
 
 if __name__ == '__main__':
-    # db = DataBase("test")
-    db = global_db
+    db = DataBase("test")
     print ('----test0-----')
     db.insert_signal(mac = '12345', rssi = 20)
     db.insert_signal(mac = '345678', rssi = 30)
