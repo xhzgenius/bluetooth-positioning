@@ -91,8 +91,8 @@ class DataBase:
         return myresult
 
     def insert_location(self, x, y):
-        if not type(x) == int or not type(y) == int:
-            print('WARNING(failed locations insert): x, y should be int', file = sys.stderr)
+        if not type(x) in (int, float) or not type(y) in (int, float):
+            print('WARNING(failed locations insert): x, y should be int or float', file = sys.stderr)
             return False
         now = datetime.now()
         formatted_date = now.strftime('%Y%m%D%H%M%S')

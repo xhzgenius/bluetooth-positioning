@@ -7,7 +7,7 @@ from database import global_db
 MACS = {
     'E0E2E69C1E6C': (0, 212.8),
     'E0E2E69C1FD0': (0, 0),
-    'E0E2E570175C': (266.0, 1)
+    'E0E2E670175C': (266.0, 1)
 }
 
 class Analyzer:
@@ -39,7 +39,7 @@ class Analyzer:
         return x, y
     
     def _calculate_distance(self, rssi):
-        return 10 ** ((-Analyzer._messured_power - rssi) / 10  * Analyzer._N)
+        return 10 ** ((-Analyzer._measured_power - rssi) / 10  * Analyzer._N)
     
     def single_run(self):
         data = {}
@@ -82,12 +82,13 @@ class Visualizer:
     def single_run(self):
         print ('Visualizer now runnning...')
         self.cnt += 1 
-        # debug
-        res = self.db.get_all_locations()
-        for y in res: print ("location:", y)
-        # get all location
+        # get all locations
         locations = self.db.get_location(last = -1)
-        if not len(locations): return
+        print("Got locations: ")
+        for x in locations: print(x)
+        if len(locations)==0:
+            print("Not enough locations. Quit plotting. ")
+            return
         xs = [int(x) for x, _, _ in locations]
         ys = [int(y) for y, _, _ in locations]
         plt.scatter([x[0] for x in MACS.values()], [x[1] for x in MACS.values()], c = 'red')
