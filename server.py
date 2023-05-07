@@ -16,7 +16,13 @@ class MyHandler(BaseHTTPRequestHandler):
         # Read the http POST content. 
         raw_data = self.rfile.read(int(self.headers['content-length'])) # Read http content
         
-        data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Data from black box, in json form. 
+        try:
+            data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Data from black box, in json form. 
+        except:
+            print("[%s] Received invalid data from %s. "%
+                  (datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address
+            ))
+            return
         devices = data["devices"] # This is the frame which is defined in the documentation of black box. 
         
         print("[%s] Received http request from %s, content length: %d"%(
