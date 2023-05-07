@@ -57,7 +57,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
         pass
         
-def serve(name):
+def serve():
     with ThreadingHTTPServer((our_server_ip, our_server_port), MyHandler) as server:
         print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
         try:
