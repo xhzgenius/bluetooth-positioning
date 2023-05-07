@@ -4,9 +4,9 @@ from database import DataBase
 
 # TODO: replace mac names with MAC address and hardcode the location
 macs = {
-    'mac1': (0, 0),
-    'mac2': (0, 0),
-    'mac3': (0, 0)
+    'E0E2E69C1E6C': (0, 0),
+    'E0E2E69C1FD0': (1, 0),
+    'E0E2E570175C': (1, 1)
 }
 
 class Analyzer:

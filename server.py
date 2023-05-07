@@ -1,18 +1,16 @@
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from key import *
 
 import msgpack
 import msgpack_numpy
 
 from database import DataBase
 
-our_server_ip = "0.0.0.0" # This is right. 
-our_server_port = 12345
 
 class MyHandler(BaseHTTPRequestHandler):
-    def __init__(self, name, *args):
-        print ('sever running...')
-        self.db = DataBase(name) 
+    def __init__(self, *args):
+        self.db = DataBase(database_name)
         BaseHTTPRequestHandler.__init__(self, *args)
         
     def do_POST(self):
@@ -22,19 +20,21 @@ class MyHandler(BaseHTTPRequestHandler):
         data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Data from black box, in json form. 
         devices = data["devices"] # This is the frame which is defined in the documentation of black box. 
         
-        print("[%s] Received http request from %s, content: %s"%(
-            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, data
+        print("[%s] Received http request from %s, content length: %d"%(
+            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, len(data)
         ))
         
-        # TODO: Decode the devices data frame (binary). 
-        mac1 = data['mac']
+        # Decode the devices data frame (binary). 
+        box_mac = data['mac']
         for device in devices:
-            mac = (device[1:7]).hex().upper()
+            device_mac = (device[1:7]).hex().upper()
+            # concentrate on target device
+            if device_mac != target_mac:
+                continue
             # Send data to mysql. 
-            # TODO: Send data to mysql.
             rssi = int.from_bytes(device[7:8], byteorder='little') - 256
-            self.db.insert_signal(mac, rssi)
-            print ('mac', mac, 'mac1', mac1, 'rssi', rssi)        
+            self.db.insert_signal(box_mac, rssi)
+            # print ('mac:', mac, 'mac1:', mac1, 'rssi:', rssi)        
         
         # Respond to the client. (Optional)
         self.send_response(200)
@@ -47,12 +47,10 @@ class MyHandler(BaseHTTPRequestHandler):
         pass
         
 def serve(name):
-    def handler(*args):
-        MyHandler(name, *args)
-    with HTTPServer((our_server_ip, our_server_port), handler) as server:
+    with HTTPServer((our_server_ip, our_server_port), MyHandler) as server:
         print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
         server.serve_forever()
 
 if __name__ == '__main__':
     from database import DataBase 
-    serve(DataBase('test'))
+    serve("test")

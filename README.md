@@ -3,7 +3,7 @@
 
 ## Build env
 ```
-pip3 install msgpack msgpack_numpy mysql-connector-python 
+pip3 install msgpack msgpack_numpy mysql-connector-python matplotlib
 ```
 
 ## DataBase 
@@ -15,14 +15,14 @@ pip3 install msgpack msgpack_numpy mysql-connector-python
     - add an account;
     ```mysql
     mysql> CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
-    mysql> GRANT ALL PRIVILEGES ON *.* TO 'user'@'localhost'
+    mysql> GRANT ALL PRIVILEGES ON *.* TO 'user'@'localhost';
     ```
     - add a key.py with following attributes:
-```python
-user = 'xxx'
-host = 'xxx'
-password = 'xxx'
-``` 
+    ```python
+    user = 'xxx'
+    host = 'xxx'
+    password = 'xxx'
+    ``` 
 
 2. API
 ```

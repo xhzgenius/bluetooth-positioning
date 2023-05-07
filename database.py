@@ -8,7 +8,7 @@ class DataBase:
         print (f'database {name} runnning...')
         self.db = mysql.connector.connect(
             host="localhost",
-            user="lab1-database",
+            user="user",
             password=password
         )
         
