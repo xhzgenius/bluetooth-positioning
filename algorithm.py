@@ -7,7 +7,7 @@ from key import database_name
 macs = {
     'E0E2E69C1E6C': (2.66, 0),
     'E0E2E69C1FD0': (0, 0),
-    'E0E2E570175C': (0, 212.8)
+    'E0E2E570175C': (0, 2.128)
 }
 
 class Analyzer:

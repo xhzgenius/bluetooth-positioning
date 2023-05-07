@@ -80,7 +80,7 @@ class DataBase:
         return myresult
 
     def insert_location(self, x, y):
-        if not type(x) == int or not type(y) == int:
+        if not type(x) == (int, float) or not type(y) == (int, float):
             print('WARNING(failed locations insert): x, y should be int', file = sys.stderr)
             return False
         now = datetime.now()
