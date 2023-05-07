@@ -54,7 +54,10 @@ class MyHandler(BaseHTTPRequestHandler):
 def serve(name):
     with HTTPServer((our_server_ip, our_server_port), MyHandler) as server:
         print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
-        server.serve_forever()
+        try:
+            server.serve_forever()
+        except Exception as e:
+            print(e)
 
 if __name__ == '__main__':
     serve("test")
