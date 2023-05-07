@@ -80,7 +80,7 @@ class Visualizer:
         os.system(f'mkdir -p {logdir}')
 
     def single_run(self):
-        print ('visualizer now runnning...')
+        print ('Visualizer now runnning...')
         self.cnt += 1 
         # debug
         res = self.db.get_all_locations()
@@ -99,7 +99,8 @@ class Visualizer:
         for i,x,y in enumerate(zip(xs,ys)):
             plt.annotate(str(i), (x,y))
         
-        plt.savefig("./test.png")
+        plt.savefig(fname="./%d.png"%(self.cnt))
+        print("Visualizer saved figure. ")
     
     def run(self):
         print (f'visualizer runnning...')
