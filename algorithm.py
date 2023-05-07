@@ -5,9 +5,9 @@ from database import global_db
 
 # TODO: replace mac names with MAC address and hardcode the location
 MACS = {
-    'E0E2E69C1E6C': (0, 212.8),
+    'E0E2E69C1E6C': (2.660, 0),
     'E0E2E69C1FD0': (0, 0),
-    'E0E2E670175C': (266.0, 1)
+    'E0E2E670175C': (0, 2.128)
 }
 
 class Analyzer:
