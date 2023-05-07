@@ -1,6 +1,6 @@
 import time
 from typing import Dict, Tuple
-from database import DataBase
+from database import global_db
 # from key import database_name
 
 # TODO: replace mac names with MAC address and hardcode the location
@@ -18,7 +18,7 @@ class Analyzer:
     _N = 2
     
     def __init__(self, name):
-        self.db = DataBase(name) 
+        self.db = global_db
     
     def _find_location(self, data: Dict[str, float]):
         xs = []
@@ -48,13 +48,17 @@ class Analyzer:
             data = {}
             failed = False
             for mac in macs:
-                results = self.db.get_signal(mac = mac)
+                # results = self.db.get_signal(mac = mac)
+                results = self.db.get_all_signals()
+                print("In ana:")
+                for x in results: print(x)
                 if not len(results):
                     failed = True 
                     break 
                 mac, rssi, _ = results[0]
                 rssi = int(rssi)
                 data[mac] = self._calculate_distance(rssi) 
+                print(f"insert location %s yes"%mac)
             if failed: continue 
             x,y = self._find_location(data)
             self.db.insert_location(x,y)
@@ -66,7 +70,7 @@ class Visualizer:
     _sleep_time = 5
     
     def __init__(self, name, logdir = '.'):
-        self.db = DataBase(name)
+        self.db = global_db
         self.logdir = logdir 
         self.cnt = 0
         os.system(f'mkdir -p {logdir}')
@@ -75,7 +79,11 @@ class Visualizer:
         print (f'visualizer runnning...')
         while True:
             time.sleep(self._sleep_time)
+            print (f'visualizer now runnning...')
             self.cnt += 1 
+            # debug
+            res = self.db.get_all_locations()
+            for y in res: print ("location:",y)
             # get all location
             locations = self.db.get_location(last = -1)
             if not len(locations): continue 

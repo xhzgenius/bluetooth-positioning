@@ -59,9 +59,10 @@ class DataBase:
             val = (mac, str(rssi), formatted_date)
             self.cursor.execute(sql, val)
             # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
-            print("ALL SIGNALS: ")
-            res = self.get_all_signals()
-            for x in res: print (x)
+            # print("ALL SIGNALS: ")
+            # res = self.get_all_signals()
+            # for x in res: print (x)
+            # debug print
             print("get_signal")
             res = self.get_signal(mac=mac)
             for x in res: print (x)
@@ -99,6 +100,14 @@ class DataBase:
         self.cursor.execute(sql, (str(x),str(y),formatted_date))
         return True
     
+    def get_all_locations(self, last = 5):
+        sql = f'SELECT * FROM locations'
+        if last > 0:
+            sql += f' ORDER BY date DESC LIMIT {last}'
+        self.cursor.execute(sql)
+        myresult = self.cursor.fetchall()
+        return myresult
+    
     def get_location(self, last = 1):
         try: 
             sql = 'SELECT * FROM locations'
@@ -107,7 +116,8 @@ class DataBase:
             self.cursor.execute(sql)
             myresult = self.cursor.fetchall()
             return myresult
-        except: 
+        except Exception as e: 
+            print(e)
             return []
     def clear(self):
         # self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
