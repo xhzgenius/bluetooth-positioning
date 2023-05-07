@@ -19,11 +19,17 @@ pip3 install msgpack msgpack_numpy mysql-connector-python matplotlib
     ```
     - add a key.py with following attributes:
     ```python
-    user = 'xxx'
-    host = 'xxx'
-    password = 'xxx'
-    ``` 
-
+    our_server_ip = "0.0.0.0"
+    our_server_port = 12345
+    
+    database_name = "xxx"
+    user = "xxx"
+    host = "localhost"
+    password = "xxx"
+    
+    target_mac = "XXXXXXXXXXXX" # Mac address of your target device
+    ```
+    
 2. API
 ```
 1: signals (mac VARCHAR(255), rssi VARCHAR(255), date VARCHAR(255))
@@ -67,4 +73,6 @@ python ./main.py
 - (0, 0, 0)
 - (266.0, 0, 0)
 
+##### 标定
 
+用4×3=12个网格格点进行了标定，参数为N和measured_power，使用线性回归来拟合距离的对数和rssi值的关系，由回归系数计算参数。
