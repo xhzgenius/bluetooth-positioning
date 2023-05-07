@@ -5,12 +5,11 @@ from key import *
 import msgpack
 import msgpack_numpy
 
-from database import DataBase
+from database import global_db
 
 
 class MyHandler(BaseHTTPRequestHandler):
     def __init__(self, *args):
-        self.db = DataBase(database_name)
         BaseHTTPRequestHandler.__init__(self, *args)
         
     def do_POST(self):
@@ -33,7 +32,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 continue
             # Send data to mysql. 
             rssi = int.from_bytes(device[7:8], byteorder='little') - 256
-            self.db.insert_signal(box_mac, rssi)
+            global_db.insert_signal(box_mac, rssi)
             # print ('mac:', mac, 'mac1:', mac1, 'rssi:', rssi)        
         
         # Respond to the client. (Optional)
@@ -52,5 +51,4 @@ def serve(name):
         server.serve_forever()
 
 if __name__ == '__main__':
-    from database import DataBase 
     serve("test")

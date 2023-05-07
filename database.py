@@ -1,7 +1,7 @@
 import mysql.connector
 import sys
 from datetime import datetime 
-from key import password
+from key import password, database_name
 
 class DataBase:
     def __init__(self, name):
@@ -80,6 +80,7 @@ class DataBase:
     def clear(self):
         self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
         
+global_db = DataBase(database_name)
 
 if __name__ == '__main__':
     db = DataBase("test")
