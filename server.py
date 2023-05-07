@@ -1,11 +1,11 @@
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from key import *
+from algorithm import global_analyzer, global_visualizer
+from database import global_db
 
 import msgpack
 import msgpack_numpy
-
-from database import global_db
 
 
 class MyHandler(BaseHTTPRequestHandler):
@@ -43,17 +43,18 @@ class MyHandler(BaseHTTPRequestHandler):
         if rssi_len == 0:
             return
         avg_rssi = int(sum(rssi_lst)/rssi_len)
+
         # Send data to mysql. 
         global_db.insert_signal(box_mac, avg_rssi)
-        # res = global_db.get_signal(mac=box_mac, last = 1)
-        # for x in res: print (x)
-            # print("show getsignals")
-            # global_db.get_signal(mac=target_mac, last = 1)
-            # print("[%s] Inserted an entry into mysql. "%
-            #       (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), 
-            # ))
         print ('target_mac:', target_mac, 'box_mac:', box_mac, 'avg_rssi:', avg_rssi)        
         
+        # Calculate position. 
+        global_analyzer.single_run()
+
+        # Visualize. 
+        global_visualizer.single_run()
+        # You'd better run successfully. 
+
         pass
         
 def serve(name):
