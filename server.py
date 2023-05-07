@@ -20,13 +20,13 @@ class MyHandler(BaseHTTPRequestHandler):
             data = msgpack.unpackb(raw_data, object_hook = msgpack_numpy.decode) # Data from black box, in json form. 
         except:
             print("[%s] Received invalid data from %s. "%
-                  (datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address
+                  (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), self.client_address
             ))
             return
         devices = data["devices"] # This is the frame which is defined in the documentation of black box. 
         
         print("[%s] Received http request from %s, content length: %d"%(
-            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address, len(data)
+            datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), self.client_address, len(data)
         ))
         
         # Decode the devices data frame (binary). 
@@ -39,16 +39,11 @@ class MyHandler(BaseHTTPRequestHandler):
             # Send data to mysql. 
             rssi = int.from_bytes(device[7:8], byteorder='little') - 256
             global_db.insert_signal(box_mac, rssi)
+            print("[%s] Inserted an entry into mysql. "%
+                  (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), 
+            ))
             # print ('mac:', mac, 'mac1:', mac1, 'rssi:', rssi)        
         
-        # Respond to the client. (Optional)
-        self.send_response(200)
-        self.send_header("Content-type","text/html") # Set response header
-        self.send_header("response", "Received your POST request. ")
-        self.end_headers()
-        print("[%s] Responded to %s"%(
-            datetime.strftime(datetime.now(), "%Y-%m-%d %H-%M-%S"), self.client_address
-        ))
         pass
         
 def serve(name):

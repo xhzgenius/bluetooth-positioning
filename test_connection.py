@@ -21,4 +21,5 @@
 import requests
 
 response = requests.post("http://82.157.173.163:12345", data={"foo": "bar"})
-print(response)
+print("Response:", response)
+print("Finished!")
