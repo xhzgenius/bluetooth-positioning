@@ -2,6 +2,7 @@ import mysql.connector
 import sys
 from datetime import datetime 
 from key import password, database_name
+import time
 
 class DataBase:
     def __init__(self, name):
@@ -15,10 +16,16 @@ class DataBase:
         self.name = name 
         
         self.cursor = self.db.cursor()
+
+        # self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
         
-        self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {name}")
+        self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {self.name}")
 
         self.cursor.execute(f'USE {self.name}')
+
+        # self.cursor.execute(f"DROP TABLE signals")
+
+        # self.cursor.execute(f"DROP TABLE locations")
 
         self.cursor.execute("CREATE TABLE IF NOT EXISTS signals (mac VARCHAR(255), rssi VARCHAR(255), date VARCHAR(255))")
 
@@ -39,30 +46,55 @@ class DataBase:
             print('WARNING(failed signals insert): mac should be str, rssi should be int', file = sys.stderr)
             return False
         now = datetime.now()
-        formatted_date = now.strftime('%Y%m%H%M%S')
-        sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
-        val = (mac, str(rssi), formatted_date)
-        self.cursor.execute(sql, val)
+        formatted_date = now.strftime('%Y%m%D%H%M%S')
+        # sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
+        # val = (mac, str(rssi), formatted_date)
+        # self.cursor.execute(sql, val)
+        # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
+        # print("print get_signal")
+        # res = self.get_signal(mac=mac, last = 1)
+        # for x in res: print (x)
+        try:
+            sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
+            val = (mac, str(rssi), formatted_date)
+            self.cursor.execute(sql, val)
+            # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
+            print("ALL SIGNALS: ")
+            res = self.get_all_signals()
+            for x in res: print (x)
+            print("get_signal")
+            res = self.get_signal(mac=mac)
+            for x in res: print (x)
+        except Exception as e:
+            print("SQL ERROR", e)
         return True 
         
     def get_signal(self, mac, last = 1):
         try: 
-            sql = f'SELECT * FROM signals WHERE mac={mac}'
+            sql = f"SELECT * FROM signals WHERE (mac='{mac}')"
             if last > 0:
                 sql += f' ORDER BY date DESC LIMIT {last}'
             self.cursor.execute(sql)
             myresult = self.cursor.fetchall()
             return myresult
-        except:
+        except Exception as e:
+            print(e)
             return []
-        
+    
+    def get_all_signals(self, last = 5):
+        sql = f'SELECT * FROM signals'
+        if last > 0:
+            sql += f' ORDER BY date DESC LIMIT {last}'
+        self.cursor.execute(sql)
+        myresult = self.cursor.fetchall()
+        return myresult
 
     def insert_location(self, x, y):
         if not type(x) == int or not type(y) == int:
             print('WARNING(failed locations insert): x, y should be int', file = sys.stderr)
             return False
         now = datetime.now()
-        formatted_date = now.strftime('%Y%m%H%M%S')
+        formatted_date = now.strftime('%Y%m%D%H%M%S')
         sql = "INSERT INTO locations (x, y, date) VALUES (%s, %s, %s)"
         self.cursor.execute(sql, (str(x),str(y),formatted_date))
         return True
@@ -78,12 +110,15 @@ class DataBase:
         except: 
             return []
     def clear(self):
-        self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
+        # self.cursor.execute(f"DROP DATABASE IF EXISTS {self.name}")
+        print("hello world")
+        # time.sleep(1)
         
 global_db = DataBase(database_name)
 
 if __name__ == '__main__':
-    db = DataBase("test")
+    # db = DataBase("test")
+    db = global_db
     print ('----test0-----')
     db.insert_signal(mac = '12345', rssi = 20)
     db.insert_signal(mac = '345678', rssi = 30)

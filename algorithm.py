@@ -1,6 +1,7 @@
 import time
 from typing import Dict, Tuple
 from database import DataBase
+# from key import database_name
 
 # TODO: replace mac names with MAC address and hardcode the location
 macs = {

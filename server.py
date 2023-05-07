@@ -31,18 +31,28 @@ class MyHandler(BaseHTTPRequestHandler):
         
         # Decode the devices data frame (binary). 
         box_mac = data['mac']
+        rssi_lst = []
         for device in devices:
             device_mac = (device[1:7]).hex().upper()
             # concentrate on target device
             if device_mac != target_mac:
                 continue
-            # Send data to mysql. 
             rssi = int.from_bytes(device[7:8], byteorder='little') - 256
-            global_db.insert_signal(box_mac, rssi)
+            rssi_lst.append(rssi)
+        rssi_len = len(rssi_lst)
+        if rssi_len == 0:
+            return
+        avg_rssi = int(sum(rssi_lst)/rssi_len)
+        # Send data to mysql. 
+        global_db.insert_signal(box_mac, avg_rssi)
+        # res = global_db.get_signal(mac=box_mac, last = 1)
+        # for x in res: print (x)
+            # print("show getsignals")
+            # global_db.get_signal(mac=target_mac, last = 1)
             # print("[%s] Inserted an entry into mysql. "%
             #       (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), 
             # ))
-            print ('device_mac:', device_mac, 'box_mac:', box_mac, 'rssi:', rssi)        
+        print ('target_mac:', target_mac, 'box_mac:', box_mac, 'avg_rssi:', avg_rssi)        
         
         pass
         
