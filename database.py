@@ -58,6 +58,7 @@ class DataBase:
             sql = "INSERT INTO signals (mac, rssi, date) VALUES (%s, %s, %s)"
             val = (mac, str(rssi), formatted_date)
             self.cursor.execute(sql, val)
+            self.db.commit()
             # self.cursor.execute("INSERT INTO signals (mac, rssi, date) VALUES ('%s', '%s', '%s')"%(mac, str(rssi), formatted_date))
             # print("ALL SIGNALS: ")
             # res = self.get_all_signals()
@@ -98,6 +99,7 @@ class DataBase:
         formatted_date = now.strftime('%Y%m%D%H%M%S')
         sql = "INSERT INTO locations (x, y, date) VALUES (%s, %s, %s)"
         self.cursor.execute(sql, (str(x),str(y),formatted_date))
+        self.db.commit()
         return True
     
     def get_all_locations(self, last = 5):

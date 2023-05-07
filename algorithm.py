@@ -14,8 +14,16 @@ class Analyzer:
     _sleep_time = 1
     # standard rssi for 1 meter
     # https://iotandelectronics.wordpress.com/2016/10/07/how-to-calculate-distance-from-the-rssi-value-of-the-ble-beacon/
-    _measured_power = -69 
-    _N = 2
+    _measured_power = {
+        'E0E2E69C1E6C': -57.0,
+        'E0E2E69C1FD0': -57.4,
+        'E0E2E670175C': -59.5
+    } 
+    _N = {
+        'E0E2E69C1E6C': 0.306,
+        'E0E2E69C1FD0': 0.255,
+        'E0E2E670175C': 0.282
+    }
     
     def __init__(self):
         self.db = global_db
@@ -38,8 +46,8 @@ class Analyzer:
         y = (C*D - A*F) / (B*D - A*E)
         return x, y
     
-    def _calculate_distance(self, rssi):
-        return 10 ** ((-Analyzer._measured_power - rssi) / 10  * Analyzer._N)
+    def _calculate_distance(self, mac, rssi):
+        return 10 ** ((Analyzer._measured_power[mac] - rssi) / 10  * Analyzer._N[mac])
     
     def single_run(self):
         data = {}
@@ -53,7 +61,11 @@ class Analyzer:
                 break 
             mac, rssi, _ = results[0]
             rssi = int(rssi)
-            data[mac] = self._calculate_distance(rssi) 
+            data[mac] = self._calculate_distance(mac, rssi)
+            # 边界约束 
+            if data[mac] >= 10:
+                failed = True
+                break
         if failed:
             print("Calculate distance failed. ")
             return
@@ -89,15 +101,15 @@ class Visualizer:
         if len(locations)==0:
             print("Not enough locations. Quit plotting. ")
             return
-        xs = [int(x) for x, _, _ in locations]
-        ys = [int(y) for y, _, _ in locations]
+        xs = [float(x) for x, _, _ in locations]
+        ys = [float(y) for _, y, _ in locations]
         plt.scatter([x[0] for x in MACS.values()], [x[1] for x in MACS.values()], c = 'red')
         for mac in MACS:
             plt.annotate(mac, MACS[mac])
             
         plt.scatter(xs, ys, c = 'black')
         
-        for i,x,y in enumerate(zip(xs,ys)):
+        for i,(x,y) in enumerate(zip(xs,ys)):
             plt.annotate(str(i), (x,y))
         
         plt.savefig(fname="./%d.png"%(self.cnt))
