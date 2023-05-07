@@ -90,17 +90,16 @@ class Visualizer:
         if not len(locations): return
         xs = [int(x) for x, _, _ in locations]
         ys = [int(y) for y, _, _ in locations]
-        fig, ax = plt.subplots()
-        ax.scatter([x[0] for x in MACS.values()], [x[1] for x in MACS.values()], c = 'red')
+        plt.scatter([x[0] for x in MACS.values()], [x[1] for x in MACS.values()], c = 'red')
         for mac in MACS:
-            ax.annotate(mac, MACS[mac])
+            plt.annotate(mac, MACS[mac])
             
-        ax.scatter(xs, ys, c = 'black')
+        plt.scatter(xs, ys, c = 'black')
         
         for i,x,y in enumerate(zip(xs,ys)):
-            ax.annotate(str(i), (x,y))
-        logfile = f'log-{str(self.cnt)}.txt'
-        fig.savefig(os.path.join(self.logdir, logfile))
+            plt.annotate(str(i), (x,y))
+        
+        plt.savefig("./test.png")
     
     def run(self):
         print (f'visualizer runnning...')
