@@ -1,5 +1,5 @@
 from datetime import datetime
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from key import *
 
 import msgpack
@@ -39,15 +39,15 @@ class MyHandler(BaseHTTPRequestHandler):
             # Send data to mysql. 
             rssi = int.from_bytes(device[7:8], byteorder='little') - 256
             global_db.insert_signal(box_mac, rssi)
-            print("[%s] Inserted an entry into mysql. "%
-                  (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), 
-            ))
-            # print ('mac:', mac, 'mac1:', mac1, 'rssi:', rssi)        
+            # print("[%s] Inserted an entry into mysql. "%
+            #       (datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S"), 
+            # ))
+            print ('device_mac:', device_mac, 'box_mac:', box_mac, 'rssi:', rssi)        
         
         pass
         
 def serve(name):
-    with HTTPServer((our_server_ip, our_server_port), MyHandler) as server:
+    with ThreadingHTTPServer((our_server_ip, our_server_port), MyHandler) as server:
         print("TCP server started at %s:%d"%(our_server_ip, our_server_port))
         try:
             server.serve_forever()
